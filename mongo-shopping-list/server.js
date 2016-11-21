@@ -35,6 +35,19 @@ app.post('/items', function(req, res) {
     });
 });
 
+app.put('/items/:toChange', function(req, res) {
+    // console.log(req.params);
+    Item.findOneAndUpdate({_id: req.params.toChange}, {name: req.body.name}, function(err, item){
+    if (err || !item) {
+        console.error("Could not find item ", req.params.toChange);
+        return;
+        res.status(404).json(item);
+    }
+    console.log("Updated item", req.params.toChange);
+        res.status(200).json(item);
+    });
+});
+
 app.use('*', function(req, res) {
     res.status(404).json({
         message: 'Not Found'
