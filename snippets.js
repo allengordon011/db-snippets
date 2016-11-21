@@ -13,8 +13,8 @@ MongoClient.connect('mongodb://trig:cod1ng!@ds159517.mlab.com:59517/db-snippets'
 
     var create = function(name, content) {
     	var snippet = {
-    		name: "name",
-    		content: "content"
+    		name: name,
+    		content: content
     	};
     	collection.insert(snippet, function(err, result){
     		if (err) {
@@ -43,11 +43,38 @@ MongoClient.connect('mongodb://trig:cod1ng!@ds159517.mlab.com:59517/db-snippets'
     };
 
     var update = function(name, content) {
-        db.close();
+    	var query = {
+    		name: name
+    	};
+    	var update = {
+    		$set: {content: content}
+    	};
+    	collection.findAndModify(query, null, update, function(err,result){
+    		var snippet = result.value;
+    		if (!snippet || err){
+    			console.error("Could not update snippet", name);
+    			db.close();
+    			return;
+    		}
+    		console.log("Update snippet", snippet.name);
+    		db.close();
+    	});
     };
 
     var del = function(name, content) {
-        db.close();
+    	var query = {
+    		name: name
+    	};
+    	collection.findAndRemove(query, function(err, result){
+    		var snippet = result.value;
+    		if (!snippet || err){
+    			console.error("Could not delete snippet", name);
+    			db.close();
+    			return;
+    		}
+    		console.log("Deleted snippet", snippet.name);
+    		db.close();
+    	});
     };
 
     var main = function() {
